@@ -5,9 +5,20 @@
 # certificate automatically. See README "HTTPS".
 {
 	admin off
+	servers {
+		# Requests arrive from a local proxy (Docker gateway / Cloudflare
+		# Tunnel). Trust it, and take the visitor's real IP from Cloudflare's
+		# header so per-address sign-in limits apply per visitor.
+		trusted_proxies static private_ranges
+		client_ip_headers Cf-Connecting-IP X-Forwarded-For
+	}
 }
 
 {$SITE_ADDRESS::80} {
+	# The app's old address; keep links working.
+	@old_address host review.uncanned.in
+	redir @old_address https://cutroom.uncanned.in{uri} permanent
+
 	encode zstd gzip
 
 	header {
@@ -25,6 +36,8 @@
 			max_size 64MB
 		}
 		reverse_proxy backend:8000 {
+			# Pass exactly one, trusted client address to the backend.
+			header_up X-Forwarded-For {client_ip}
 			# Stream video and upload responses without buffering.
 			flush_interval -1
 			transport http {

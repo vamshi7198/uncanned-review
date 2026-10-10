@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=None, extra="ignore")
 
-    app_name: str = "Uncanned Review"
+    app_name: str = "Cutroom"
     environment: str = "development"
 
     database_url: str = "postgresql+psycopg://review:review@localhost:5432/review"

@@ -6,7 +6,7 @@ import { ToastProvider } from "@/components/toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Uncanned Review",
+  title: "Cutroom",
   description: "Private video review and approval",
   robots: { index: false, follow: false },
 };

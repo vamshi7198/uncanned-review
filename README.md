@@ -1,4 +1,6 @@
-# Uncanned Review
+# Cutroom
+
+_Video review and approval for Uncanned. Live at https://cutroom.uncanned.in._
 
 A private, self-hosted video review tool. An editor uploads a cut, reviewers
 pause on the exact frame and leave feedback, the editor uploads a new version,
@@ -178,7 +180,7 @@ All settings live in `.env` (see `.env.example`). After changing it, run
 | `HTTP_BIND` | `127.0.0.1` | `127.0.0.1` = this computer only; `0.0.0.0` = your network. |
 | `SITE_ADDRESS` | `:80` | A domain name turns on automatic HTTPS (see below). |
 | `COOKIE_SECURE` | `false` | Must be `true` when served over HTTPS. |
-| `APP_NAME` | `Uncanned Review` | Product name shown in the UI. |
+| `APP_NAME` | `Cutroom` | Product name shown in the UI. |
 | `MAX_UPLOAD_BYTES` | `10737418240` (10 GiB) | Largest accepted video. |
 | `MEDIA_DIR` | Docker volume | Absolute path to store videos elsewhere (e.g. another drive). |
 

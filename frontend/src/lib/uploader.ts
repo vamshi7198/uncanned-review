@@ -34,7 +34,9 @@ export class UploadCancelled extends Error {
   }
 }
 
-const RETRYABLE = new Set([0, 408, 409, 429, 500, 502, 503, 504]);
+// 520–524 are Cloudflare's "origin unreachable / timed out" responses.
+const RETRYABLE = new Set([0, 408, 409, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524]);
+const RETRYABLE_FINALIZE = new Set([0, 502, 503, 504, 520, 521, 522, 523, 524]);
 
 export function sendChunkXhr(
   uploadId: string,
@@ -175,7 +177,7 @@ export class Uploader {
       } catch (err) {
         // Finalize is idempotent on the server, so retrying is safe.
         const status = err instanceof ApiError ? err.status : 0;
-        if (![0, 502, 503, 504].includes(status) || attempt >= maxRetries) throw err;
+        if (!RETRYABLE_FINALIZE.has(status) || attempt >= maxRetries) throw err;
         await sleep(Math.min(1000 * 2 ** attempt, 15_000));
       }
     }

@@ -25,7 +25,7 @@ interface SessionState {
 
 const SessionContext = createContext<SessionState | null>(null);
 
-const DEFAULT_NAME = "Uncanned Review";
+const DEFAULT_NAME = "Cutroom";
 
 async function loadSession(): Promise<{ config: PublicConfig | null; user: User | null }> {
   try {
