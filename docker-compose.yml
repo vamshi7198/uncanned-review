@@ -1,0 +1,72 @@
+# Uncanned Review — local / self-hosted stack.
+#   docker compose up --build -d
+# Only Caddy is published; the database and app containers are internal.
+
+name: uncanned-review
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: review
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (run scripts/init-env)}
+      POSTGRES_DB: review
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U review -d review"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://review:${POSTGRES_PASSWORD}@db:5432/review
+      MEDIA_ROOT: /data/media
+      APP_NAME: ${APP_NAME:-Uncanned Review}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      BOOTSTRAP_TOKEN: ${BOOTSTRAP_TOKEN:-}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      MAX_UPLOAD_BYTES: ${MAX_UPLOAD_BYTES:-10737418240}
+      UPLOAD_CHUNK_BYTES: ${UPLOAD_CHUNK_BYTES:-8388608}
+    volumes:
+      # A named volume by default. Set MEDIA_DIR in .env to an absolute path
+      # (e.g. a larger drive) to store videos there instead.
+      - ${MEDIA_DIR:-media}:/data/media
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_started
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    ports:
+      - "${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-8090}:80"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  media:
+  caddy_data:
+  caddy_config:

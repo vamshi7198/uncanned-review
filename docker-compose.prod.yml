@@ -1,0 +1,14 @@
+# Production overrides: HTTPS on 80/443 with a real domain.
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+# Requires SITE_ADDRESS=your.domain in .env and DNS pointing at this server.
+
+services:
+  backend:
+    environment:
+      ENVIRONMENT: production
+      COOKIE_SECURE: "true"
+  caddy:
+    ports: !override
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"

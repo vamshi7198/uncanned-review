@@ -1,0 +1,30 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Local data and backups
+backups/
+media/
+*.dump
+
+# Python
+backend/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node / Next
+frontend/node_modules/
+frontend/.next/
+frontend/next-env.d.ts
+frontend/tsconfig.tsbuildinfo
+frontend/playwright-report/
+frontend/test-results/
+frontend/e2e/.fixtures/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
